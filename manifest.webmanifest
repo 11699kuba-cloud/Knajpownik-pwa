@@ -1,0 +1,19 @@
+{
+  "name": "Knajpownik PWA",
+  "short_name": "Knajpownik",
+  "description": "Mobilna aplikacja do liczenia rachunku w knajpie i dzielenia kosztów.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#16a34a",
+  "lang": "pl",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

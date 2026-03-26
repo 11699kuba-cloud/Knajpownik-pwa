@@ -1,0 +1,1686 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <title>Knajpownik PWA</title>
+
+  <meta name="theme-color" content="#16a34a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --card2: #0b1220;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --line: #334155;
+      --accent: #22c55e;
+      --secondary: #1e293b;
+      --danger: #7f1d1d;
+      --ok-bg: rgba(34,197,94,.12);
+      --ok-text: #bbf7d0;
+      --bad-bg: rgba(239,68,68,.12);
+      --bad-text: #fecaca;
+      --neutral-bg: rgba(148,163,184,.12);
+      --neutral-text: #cbd5e1;
+      --warn-bg: rgba(245,158,11,.12);
+      --warn-text: #fde68a;
+      --radius: 18px;
+      --shadow: 0 10px 25px rgba(0,0,0,.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at top right, rgba(34,197,94,.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(56,189,248,.10), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body { min-height: 100vh; }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 16px 16px calc(28px + env(safe-area-inset-bottom));
+    }
+
+    .header {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .card {
+      background: rgba(17, 24, 39, .92);
+      border: 1px solid rgba(148, 163, 184, .14);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      margin-top: 6px;
+      border: 1px solid var(--line);
+      background: var(--card2);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56,189,248,.18);
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+    }
+
+    .row-2 {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .15s ease;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    .btn.secondary {
+      background: var(--secondary);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn.danger {
+      background: rgba(127, 29, 29, .4);
+      color: #fecaca;
+      border: 1px solid rgba(239, 68, 68, .35);
+    }
+
+    .btn.small {
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .chips,
+    .checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .chip button {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(239,68,68,.14);
+      color: #fecaca;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .check input {
+      width: auto;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .notice {
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(15,23,42,.35);
+      font-size: 14px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-head strong {
+      font-size: 18px;
+    }
+
+    .items,
+    .person-list,
+    .settlements {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item-card,
+    .person-card,
+    .settlement-card {
+      border: 1px solid var(--line);
+      background: var(--card2);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .item-top,
+    .person-top,
+    .settlement-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .item-name,
+    .person-name {
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: var(--card2);
+    }
+
+    .stat .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .stat .value {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .person-values {
+      display: grid;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge.ok {
+      background: var(--ok-bg);
+      color: var(--ok-text);
+    }
+
+    .badge.bad {
+      background: var(--bad-bg);
+      color: var(--bad-text);
+    }
+
+    .badge.neutral {
+      background: var(--neutral-bg);
+      color: var(--neutral-text);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      background: rgba(15,23,42,.95);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      max-width: calc(100vw - 32px);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .split-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .split-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card2);
+      padding: 12px;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .split-tab input {
+      width: auto;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .split-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(15,23,42,.28);
+      padding: 12px;
+    }
+
+    .allocations {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .alloc-row {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 10px;
+      align-items: center;
+      color: var(--text);
+    }
+
+    .alloc-row span {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .helper-row {
+      margin-top: 10px;
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: rgba(148,163,184,.08);
+      color: var(--neutral-text);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .helper-row.ok {
+      background: var(--ok-bg);
+      color: var(--ok-text);
+      border-color: rgba(34,197,94,.25);
+    }
+
+    .helper-row.warn {
+      background: var(--warn-bg);
+      color: var(--warn-text);
+      border-color: rgba(245,158,11,.24);
+    }
+
+    .helper-row.bad {
+      background: var(--bad-bg);
+      color: var(--bad-text);
+      border-color: rgba(239,68,68,.24);
+    }
+
+    .helper-row.neutral {
+      background: rgba(148,163,184,.08);
+      color: var(--neutral-text);
+      border-color: var(--line);
+    }
+
+    @media (min-width: 840px) {
+      .header {
+        grid-template-columns: 1fr auto;
+        align-items: start;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .row-2,
+      .stats,
+      .split-tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .title h1 {
+        font-size: 24px;
+      }
+
+      .alloc-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="title">
+        <h1>🍻 Knajpownik</h1>
+        <p>Mobilny licznik rachunku — offline i do instalacji na telefonie.</p>
+      </div>
+
+      <div class="toolbar">
+        <button id="installBtn" class="btn secondary hidden">Zainstaluj</button>
+        <button id="shareBtn" class="btn secondary">Udostępnij</button>
+        <button id="copyBtn" class="btn secondary">Kopiuj</button>
+        <button id="resetBtn" class="btn danger">Nowa sesja</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>Sesja</h2>
+      <label>
+        Nazwa knajpy / spotkania
+        <input id="venueInput" type="text" placeholder="np. Pub Pod Kuflem" />
+      </label>
+      <div class="helper">
+        Po instalacji aplikacja działa offline. Dane zapisują się lokalnie w telefonie.
+      </div>
+    </section>
+
+    <div class="grid grid-2">
+      <section class="card">
+        <h2>Osoby</h2>
+        <div class="row">
+          <label>
+            Imię / ksywka
+            <input id="personInput" type="text" placeholder="np. Ania" />
+          </label>
+          <button id="addPersonBtn" class="btn primary">Dodaj osobę</button>
+        </div>
+
+        <div id="peopleList" class="chips"></div>
+      </section>
+
+      <section class="card">
+        <h2 id="itemFormTitle">Dodaj pozycję</h2>
+        <form id="itemForm">
+          <div class="row">
+            <label>
+              Co zamówiono
+              <input id="itemNameInput" type="text" placeholder="np. Pizza, piwo, frytki" />
+            </label>
+
+            <div class="row-2">
+              <label>
+                Cena
+                <input id="itemPriceInput" type="text" inputmode="decimal" placeholder="np. 24,99" />
+              </label>
+
+              <label>
+                Ilość
+                <input id="itemQtyInput" type="number" min="1" step="1" value="1" />
+              </label>
+            </div>
+
+            <label>
+              Kto zapłacił
+              <select id="payerSelect"></select>
+            </label>
+
+            <div>
+              <strong>Tryb podziału</strong>
+              <div class="split-tabs">
+                <label class="split-tab">
+                  <input type="radio" name="splitMode" value="equal" checked />
+                  <span>Po równo</span>
+                </label>
+                <label class="split-tab">
+                  <input type="radio" name="splitMode" value="custom" />
+                  <span>Kwotowo</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="equalSplitBox" class="split-box">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;">
+                <strong>Podziel po równo między:</strong>
+                <div class="top-actions" style="margin-top:0">
+                  <button type="button" id="allConsumersBtn" class="btn secondary small">Wszyscy</button>
+                  <button type="button" id="clearConsumersBtn" class="btn secondary small">Wyczyść</button>
+                </div>
+              </div>
+              <div id="consumerList" class="checks"></div>
+            </div>
+
+            <div id="customSplitBox" class="split-box hidden">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;">
+                <strong>Wpisz kwoty dla osób:</strong>
+                <div class="top-actions" style="margin-top:0">
+                  <button type="button" id="clearAllocationsBtn" class="btn secondary small">Wyczyść kwoty</button>
+                </div>
+              </div>
+
+              <div id="allocationHelper" class="helper-row neutral">
+                Najpierw podaj poprawną cenę i ilość.
+              </div>
+
+              <div id="allocationList" class="allocations"></div>
+            </div>
+
+            <div class="top-actions">
+              <button id="saveItemBtn" type="submit" class="btn primary">Dodaj pozycję</button>
+              <button id="cancelEditBtn" type="button" class="btn secondary hidden">Anuluj edycję</button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="section-head">
+        <h2 style="margin:0">Pozycje</h2>
+        <strong id="liveTotal">0,00 zł</strong>
+      </div>
+
+      <div id="itemsEmpty" class="notice">Brak pozycji. Dodaj pierwsze zamówienie.</div>
+      <div id="itemsList" class="items"></div>
+    </section>
+
+    <div class="grid grid-2">
+      <section class="card">
+        <h2>Podsumowanie</h2>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="label">Suma</span>
+            <div id="sumValue" class="value">0,00 zł</div>
+          </div>
+          <div class="stat">
+            <span class="label">Pozycje</span>
+            <div id="itemsCountValue" class="value">0</div>
+          </div>
+          <div class="stat">
+            <span class="label">Osoby</span>
+            <div id="peopleCountValue" class="value">0</div>
+          </div>
+        </div>
+
+        <div id="summaryEmpty" class="notice">Dodaj osoby i pozycje, aby zobaczyć rozliczenie.</div>
+        <div id="personSummary" class="person-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Kto komu oddaje</h2>
+        <div id="settlementsEmpty" class="notice">Na razie brak rozliczeń.</div>
+        <div id="settlementsList" class="settlements"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    const STORAGE_KEY = "knajpownik-pwa-v2";
+    let editingItemId = null;
+    let deferredPrompt = null;
+    let toastTimer = null;
+
+    const els = {
+      venueInput: document.getElementById("venueInput"),
+      personInput: document.getElementById("personInput"),
+      addPersonBtn: document.getElementById("addPersonBtn"),
+      peopleList: document.getElementById("peopleList"),
+
+      itemForm: document.getElementById("itemForm"),
+      itemFormTitle: document.getElementById("itemFormTitle"),
+      itemNameInput: document.getElementById("itemNameInput"),
+      itemPriceInput: document.getElementById("itemPriceInput"),
+      itemQtyInput: document.getElementById("itemQtyInput"),
+      payerSelect: document.getElementById("payerSelect"),
+
+      equalSplitBox: document.getElementById("equalSplitBox"),
+      customSplitBox: document.getElementById("customSplitBox"),
+      consumerList: document.getElementById("consumerList"),
+      allConsumersBtn: document.getElementById("allConsumersBtn"),
+      clearConsumersBtn: document.getElementById("clearConsumersBtn"),
+
+      allocationList: document.getElementById("allocationList"),
+      allocationHelper: document.getElementById("allocationHelper"),
+      clearAllocationsBtn: document.getElementById("clearAllocationsBtn"),
+
+      saveItemBtn: document.getElementById("saveItemBtn"),
+      cancelEditBtn: document.getElementById("cancelEditBtn"),
+
+      itemsEmpty: document.getElementById("itemsEmpty"),
+      itemsList: document.getElementById("itemsList"),
+      liveTotal: document.getElementById("liveTotal"),
+
+      sumValue: document.getElementById("sumValue"),
+      itemsCountValue: document.getElementById("itemsCountValue"),
+      peopleCountValue: document.getElementById("peopleCountValue"),
+      summaryEmpty: document.getElementById("summaryEmpty"),
+      personSummary: document.getElementById("personSummary"),
+
+      settlementsEmpty: document.getElementById("settlementsEmpty"),
+      settlementsList: document.getElementById("settlementsList"),
+
+      installBtn: document.getElementById("installBtn"),
+      shareBtn: document.getElementById("shareBtn"),
+      copyBtn: document.getElementById("copyBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+
+      toast: document.getElementById("toast")
+    };
+
+    function defaultState() {
+      return {
+        venue: "",
+        people: [],
+        items: []
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!raw || typeof raw !== "object") return defaultState();
+
+        const people = Array.isArray(raw.people)
+          ? raw.people
+              .filter(p => p && typeof p.id === "string" && typeof p.name === "string")
+              .map(p => ({ id: p.id, name: p.name.trim() }))
+              .filter(p => p.name)
+          : [];
+
+        const known = new Set(people.map(p => p.id));
+
+        const items = Array.isArray(raw.items)
+          ? raw.items
+              .filter(i => i && typeof i.id === "string" && typeof i.name === "string")
+              .map(i => {
+                const splitMode = i.splitMode === "custom" ? "custom" : "equal";
+
+                return {
+                  id: i.id,
+                  name: i.name.trim() || "Pozycja",
+                  priceCents: Math.max(0, Math.round(Number(i.priceCents) || 0)),
+                  qty: Math.max(1, parseInt(i.qty, 10) || 1),
+                  payerId: known.has(i.payerId) ? i.payerId : "",
+                  splitMode,
+                  consumerIds: Array.isArray(i.consumerIds)
+                    ? i.consumerIds.filter(id => known.has(id))
+                    : [],
+                  allocations: Array.isArray(i.allocations)
+                    ? i.allocations
+                        .filter(a =>
+                          a &&
+                          typeof a.personId === "string" &&
+                          known.has(a.personId)
+                        )
+                        .map(a => ({
+                          personId: a.personId,
+                          cents: Math.max(0, Math.round(Number(a.cents) || 0))
+                        }))
+                        .filter(a => a.cents > 0)
+                    : []
+                };
+              })
+          : [];
+
+        return {
+          venue: typeof raw.venue === "string" ? raw.venue : "",
+          people,
+          items
+        };
+      } catch {
+        return defaultState();
+      }
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function uid(prefix = "id") {
+      return `${prefix}-${Math.random().toString(36).slice(2, 9)}${Date.now().toString(36)}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function money(cents) {
+      return new Intl.NumberFormat("pl-PL", {
+        style: "currency",
+        currency: "PLN"
+      }).format((cents || 0) / 100);
+    }
+
+    function parsePriceToCents(text) {
+      const normalized = String(text).trim().replace(/\s+/g, "").replace(",", ".");
+      const value = Number(normalized);
+      if (!Number.isFinite(value) || value <= 0) return null;
+      return Math.round(value * 100);
+    }
+
+    function parseFlexibleCents(text) {
+      const raw = String(text).trim();
+      if (!raw) return 0;
+      const normalized = raw.replace(/\s+/g, "").replace(",", ".");
+      const value = Number(normalized);
+      if (!Number.isFinite(value) || value < 0) return null;
+      return Math.round(value * 100);
+    }
+
+    function splitCents(total, count) {
+      const base = Math.floor(total / count);
+      const rest = total % count;
+      return Array.from({ length: count }, (_, i) => base + (i < rest ? 1 : 0));
+    }
+
+    function getPersonName(id) {
+      return state.people.find(p => p.id === id)?.name || "Nieznana osoba";
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      els.toast.textContent = message;
+      els.toast.classList.remove("hidden");
+      toastTimer = setTimeout(() => {
+        els.toast.classList.add("hidden");
+      }, 2200);
+    }
+
+    function getSelectedConsumers() {
+      return Array.from(
+        els.consumerList.querySelectorAll('input[type="checkbox"]:checked')
+      ).map(input => input.value);
+    }
+
+    function getSelectedSplitMode() {
+      const selected = document.querySelector('input[name="splitMode"]:checked');
+      return selected ? selected.value : "equal";
+    }
+
+    function getCurrentCustomAllocationMap() {
+      const map = {};
+      els.allocationList.querySelectorAll("[data-allocation-person]").forEach(input => {
+        const cents = parseFlexibleCents(input.value);
+        if (cents !== null && cents > 0) {
+          map[input.dataset.allocationPerson] = cents;
+        }
+      });
+      return map;
+    }
+
+    function readCustomAllocations() {
+      const allocations = [];
+      let hasInvalid = false;
+      let sumCents = 0;
+
+      els.allocationList.querySelectorAll("[data-allocation-person]").forEach(input => {
+        const cents = parseFlexibleCents(input.value);
+        if (cents === null) {
+          hasInvalid = true;
+          return;
+        }
+
+        if (cents > 0) {
+          allocations.push({
+            personId: input.dataset.allocationPerson,
+            cents
+          });
+          sumCents += cents;
+        }
+      });
+
+      return { allocations, sumCents, hasInvalid };
+    }
+
+    function getFormTotalCents() {
+      const priceCents = parsePriceToCents(els.itemPriceInput.value);
+      const qty = parseInt(els.itemQtyInput.value, 10);
+      if (priceCents === null || !Number.isInteger(qty) || qty < 1) return 0;
+      return priceCents * qty;
+    }
+
+    function updateCustomAllocationHelper() {
+      const totalCents = getFormTotalCents();
+      const { sumCents, hasInvalid } = readCustomAllocations();
+
+      let className = "helper-row";
+      let text = "";
+
+      if (hasInvalid) {
+        className += " bad";
+        text = "Jedna z wpisanych kwot jest niepoprawna.";
+      } else if (!totalCents) {
+        className += " neutral";
+        text = "Najpierw podaj poprawną cenę i ilość.";
+      } else if (sumCents === totalCents) {
+        className += " ok";
+        text = `Przydzielono dokładnie ${money(sumCents)} z ${money(totalCents)}.`;
+      } else if (sumCents < totalCents) {
+        className += " warn";
+        text = `Przydzielono ${money(sumCents)} z ${money(totalCents)}. Pozostało ${money(totalCents - sumCents)}.`;
+      } else {
+        className += " bad";
+        text = `Przydzielono ${money(sumCents)} z ${money(totalCents)}. Nadwyżka ${money(sumCents - totalCents)}.`;
+      }
+
+      els.allocationHelper.className = className;
+      els.allocationHelper.textContent = text;
+    }
+
+    function updateSplitModeBoxes() {
+      const mode = getSelectedSplitMode();
+      els.equalSplitBox.classList.toggle("hidden", mode !== "equal");
+      els.customSplitBox.classList.toggle("hidden", mode !== "custom");
+      updateCustomAllocationHelper();
+    }
+
+    function renderPeople() {
+      if (!state.people.length) {
+        els.peopleList.innerHTML = `<div class="notice" style="width:100%">Nie dodano jeszcze żadnych osób.</div>`;
+        return;
+      }
+
+      els.peopleList.innerHTML = state.people.map(person => `
+        <div class="chip">
+          <span>${escapeHtml(person.name)}</span>
+          <button type="button" data-remove-person="${person.id}" aria-label="Usuń">×</button>
+        </div>
+      `).join("");
+    }
+
+    function renderAllocationInputs(allocationMap = {}) {
+      if (!state.people.length) {
+        els.allocationList.innerHTML = `<div class="notice" style="width:100%">Dodaj osoby, aby wpisywać kwoty.</div>`;
+        return;
+      }
+
+      els.allocationList.innerHTML = state.people.map(person => {
+        const cents = allocationMap[person.id] || 0;
+        const value = cents > 0 ? (cents / 100).toFixed(2).replace(".", ",") : "";
+
+        return `
+          <label class="alloc-row">
+            <span>${escapeHtml(person.name)}</span>
+            <input
+              type="text"
+              inputmode="decimal"
+              placeholder="0,00"
+              value="${value}"
+              data-allocation-person="${person.id}"
+            />
+          </label>
+        `;
+      }).join("");
+    }
+
+    function renderItemControls(selectedPayerId, selectedSplitMode, selectedConsumerIds, allocationMap) {
+      if (!state.people.length) {
+        els.payerSelect.innerHTML = `<option>Najpierw dodaj osoby</option>`;
+        els.consumerList.innerHTML = `<div class="notice" style="width:100%">Dodaj osoby, aby dzielić koszty.</div>`;
+        renderAllocationInputs({});
+        els.saveItemBtn.disabled = true;
+        updateCustomAllocationHelper();
+        return;
+      }
+
+      const payerId = state.people.some(p => p.id === selectedPayerId)
+        ? selectedPayerId
+        : state.people[0].id;
+
+      const splitMode = selectedSplitMode === "custom" ? "custom" : "equal";
+
+      const validSelected = new Set(
+        (selectedConsumerIds && selectedConsumerIds.length
+          ? selectedConsumerIds
+          : state.people.map(p => p.id)
+        ).filter(id => state.people.some(p => p.id === id))
+      );
+
+      els.payerSelect.innerHTML = state.people.map(person => `
+        <option value="${person.id}">${escapeHtml(person.name)}</option>
+      `).join("");
+      els.payerSelect.value = payerId;
+
+      els.consumerList.innerHTML = state.people.map(person => `
+        <label class="check">
+          <input type="checkbox" value="${person.id}" ${validSelected.has(person.id) ? "checked" : ""} />
+          <span>${escapeHtml(person.name)}</span>
+        </label>
+      `).join("");
+
+      document.querySelectorAll('input[name="splitMode"]').forEach(input => {
+        input.checked = input.value === splitMode;
+      });
+
+      renderAllocationInputs(allocationMap || {});
+      els.saveItemBtn.disabled = false;
+      updateSplitModeBoxes();
+    }
+
+    function describeItemSplit(item) {
+      if (item.splitMode === "custom") {
+        const text = (item.allocations || [])
+          .map(a => `${getPersonName(a.personId)} ${money(a.cents)}`)
+          .join(", ");
+        return text ? `Kwotowo: ${text}` : "Kwotowo";
+      }
+
+      const consumers = (item.consumerIds || []).map(getPersonName).join(", ") || "—";
+      return `Po równo między: ${consumers}`;
+    }
+
+    function renderItems() {
+      if (!state.items.length) {
+        els.itemsEmpty.classList.remove("hidden");
+        els.itemsList.innerHTML = "";
+        return;
+      }
+
+      els.itemsEmpty.classList.add("hidden");
+
+      els.itemsList.innerHTML = state.items.map(item => {
+        const total = item.priceCents * item.qty;
+        const splitText = describeItemSplit(item);
+
+        return `
+          <div class="item-card">
+            <div class="item-top">
+              <div>
+                <div class="item-name">${escapeHtml(item.name)}</div>
+                <div class="muted">
+                  ${item.qty} × ${money(item.priceCents)} = <strong>${money(total)}</strong>
+                </div>
+              </div>
+              <div class="badge neutral">${money(total)}</div>
+            </div>
+
+            <div class="muted">Płacił(a): ${escapeHtml(getPersonName(item.payerId))}</div>
+            <div class="muted">${escapeHtml(splitText)}</div>
+
+            <div class="item-actions">
+              <button class="btn secondary small" type="button" data-edit-item="${item.id}">Edytuj</button>
+              <button class="btn danger small" type="button" data-delete-item="${item.id}">Usuń</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function buildSettlements(rows) {
+      const creditors = rows
+        .filter(row => row.balanceCents > 0)
+        .map(row => ({ name: row.name, amount: row.balanceCents }))
+        .sort((a, b) => b.amount - a.amount);
+
+      const debtors = rows
+        .filter(row => row.balanceCents < 0)
+        .map(row => ({ name: row.name, amount: Math.abs(row.balanceCents) }))
+        .sort((a, b) => b.amount - a.amount);
+
+      const result = [];
+      let i = 0;
+      let j = 0;
+
+      while (i < debtors.length && j < creditors.length) {
+        const value = Math.min(debtors[i].amount, creditors[j].amount);
+
+        if (value > 0) {
+          result.push({
+            from: debtors[i].name,
+            to: creditors[j].name,
+            amountCents: value
+          });
+        }
+
+        debtors[i].amount -= value;
+        creditors[j].amount -= value;
+
+        if (debtors[i].amount === 0) i++;
+        if (creditors[j].amount === 0) j++;
+      }
+
+      return result;
+    }
+
+    function applyItemConsumption(item, consumed) {
+      const total = item.priceCents * item.qty;
+
+      if (item.splitMode === "custom") {
+        const allocations = (item.allocations || [])
+          .filter(a => a && a.personId in consumed && Number.isInteger(a.cents) && a.cents > 0);
+
+        const allocationSum = allocations.reduce((sum, a) => sum + a.cents, 0);
+
+        if (allocations.length && allocationSum === total) {
+          allocations.forEach(a => {
+            consumed[a.personId] += a.cents;
+          });
+          return;
+        }
+
+        if (allocations.length) {
+          const ids = allocations.map(a => a.personId);
+          const shares = splitCents(total, ids.length);
+          ids.forEach((id, index) => {
+            consumed[id] += shares[index];
+          });
+          return;
+        }
+      }
+
+      let consumers = (item.consumerIds || []).filter(id => id in consumed);
+      if (!consumers.length && item.payerId in consumed) {
+        consumers = [item.payerId];
+      }
+
+      if (consumers.length) {
+        const shares = splitCents(total, consumers.length);
+        consumers.forEach((id, index) => {
+          consumed[id] += shares[index];
+        });
+      }
+    }
+
+    function calculateSummary() {
+      const paid = Object.fromEntries(state.people.map(p => [p.id, 0]));
+      const consumed = Object.fromEntries(state.people.map(p => [p.id, 0]));
+      let subtotalCents = 0;
+
+      for (const item of state.items) {
+        const total = item.priceCents * item.qty;
+        subtotalCents += total;
+
+        if (item.payerId in paid) {
+          paid[item.payerId] += total;
+        }
+
+        applyItemConsumption(item, consumed);
+      }
+
+      const rows = state.people.map(person => {
+        const paidCents = paid[person.id] || 0;
+        const consumedCents = consumed[person.id] || 0;
+
+        return {
+          id: person.id,
+          name: person.name,
+          paidCents,
+          consumedCents,
+          balanceCents: paidCents - consumedCents
+        };
+      });
+
+      return {
+        subtotalCents,
+        itemCount: state.items.length,
+        peopleCount: state.people.length,
+        rows,
+        settlements: buildSettlements(rows)
+      };
+    }
+
+    function renderSummary() {
+      const summary = calculateSummary();
+
+      els.liveTotal.textContent = money(summary.subtotalCents);
+      els.sumValue.textContent = money(summary.subtotalCents);
+      els.itemsCountValue.textContent = String(summary.itemCount);
+      els.peopleCountValue.textContent = String(summary.peopleCount);
+
+      if (!summary.peopleCount) {
+        els.summaryEmpty.classList.remove("hidden");
+        els.personSummary.innerHTML = "";
+      } else {
+        els.summaryEmpty.classList.add("hidden");
+        els.personSummary.innerHTML = summary.rows.map(row => {
+          let badgeClass = "neutral";
+          let badgeText = "Rozliczone";
+
+          if (row.balanceCents > 0) {
+            badgeClass = "ok";
+            badgeText = "Do odzyskania " + money(row.balanceCents);
+          } else if (row.balanceCents < 0) {
+            badgeClass = "bad";
+            badgeText = "Do dopłaty " + money(Math.abs(row.balanceCents));
+          }
+
+          return `
+            <div class="person-card">
+              <div class="person-top">
+                <div class="person-name">${escapeHtml(row.name)}</div>
+                <div class="badge ${badgeClass}">${badgeText}</div>
+              </div>
+              <div class="person-values">
+                <div>Zapłacił(a): ${money(row.paidCents)}</div>
+                <div>Skonsumował(a): ${money(row.consumedCents)}</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      if (!summary.settlements.length) {
+        els.settlementsEmpty.classList.remove("hidden");
+        els.settlementsEmpty.textContent = state.items.length
+          ? "Wszyscy są już rozliczeni."
+          : "Na razie brak rozliczeń.";
+        els.settlementsList.innerHTML = "";
+      } else {
+        els.settlementsEmpty.classList.add("hidden");
+        els.settlementsList.innerHTML = summary.settlements.map(item => `
+          <div class="settlement-card">
+            <div class="settlement-top">
+              <div>
+                <strong>${escapeHtml(item.from)}</strong> → <strong>${escapeHtml(item.to)}</strong>
+              </div>
+              <div class="badge ok">${money(item.amountCents)}</div>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+    function render() {
+      if (editingItemId && !state.items.some(item => item.id === editingItemId)) {
+        editingItemId = null;
+      }
+
+      const currentPayer = els.payerSelect.value;
+      const currentConsumers = getSelectedConsumers();
+      const currentSplitMode = getSelectedSplitMode();
+      const currentAllocationMap = getCurrentCustomAllocationMap();
+
+      renderPeople();
+
+      if (editingItemId) {
+        const edited = state.items.find(i => i.id === editingItemId);
+        const allocationMap = Object.fromEntries(
+          (edited?.allocations || []).map(a => [a.personId, a.cents])
+        );
+
+        renderItemControls(
+          edited?.payerId,
+          edited?.splitMode || "equal",
+          edited?.consumerIds || [],
+          allocationMap
+        );
+      } else {
+        renderItemControls(
+          currentPayer,
+          currentSplitMode,
+          currentConsumers.length ? currentConsumers : state.people.map(p => p.id),
+          currentAllocationMap
+        );
+      }
+
+      renderItems();
+      renderSummary();
+      saveState();
+    }
+
+    function resetItemForm() {
+      editingItemId = null;
+      els.itemFormTitle.textContent = "Dodaj pozycję";
+      els.saveItemBtn.textContent = "Dodaj pozycję";
+      els.cancelEditBtn.classList.add("hidden");
+      els.itemNameInput.value = "";
+      els.itemPriceInput.value = "";
+      els.itemQtyInput.value = "1";
+      renderItemControls(state.people[0]?.id, "equal", state.people.map(p => p.id), {});
+      els.itemNameInput.focus();
+    }
+
+    function addPerson() {
+      const name = els.personInput.value.trim();
+      if (!name) {
+        showToast("Podaj imię lub ksywkę.");
+        return;
+      }
+
+      const exists = state.people.some(p => p.name.toLowerCase() === name.toLowerCase());
+      if (exists) {
+        showToast("Taka osoba już istnieje.");
+        return;
+      }
+
+      state.people.push({ id: uid("person"), name });
+      els.personInput.value = "";
+      render();
+      showToast("Dodano osobę.");
+      els.personInput.focus();
+    }
+
+    function removePerson(personId) {
+      const used = state.items.some(item =>
+        item.payerId === personId ||
+        (item.consumerIds || []).includes(personId) ||
+        (item.allocations || []).some(a => a.personId === personId)
+      );
+
+      if (used) {
+        showToast("Nie można usunąć osoby użytej w pozycjach.");
+        return;
+      }
+
+      state.people = state.people.filter(person => person.id !== personId);
+      render();
+      showToast("Usunięto osobę.");
+    }
+
+    function startEditItem(itemId) {
+      const item = state.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      editingItemId = itemId;
+      els.itemFormTitle.textContent = "Edytuj pozycję";
+      els.saveItemBtn.textContent = "Zapisz zmiany";
+      els.cancelEditBtn.classList.remove("hidden");
+
+      els.itemNameInput.value = item.name;
+      els.itemPriceInput.value = (item.priceCents / 100).toFixed(2).replace(".", ",");
+      els.itemQtyInput.value = String(item.qty);
+
+      const allocationMap = Object.fromEntries(
+        (item.allocations || []).map(a => [a.personId, a.cents])
+      );
+
+      renderItemControls(item.payerId, item.splitMode || "equal", item.consumerIds || [], allocationMap);
+
+      els.itemNameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+      els.itemNameInput.focus();
+    }
+
+    function deleteItem(itemId) {
+      state.items = state.items.filter(item => item.id !== itemId);
+      if (editingItemId === itemId) {
+        resetItemForm();
+      }
+      render();
+      showToast("Usunięto pozycję.");
+    }
+
+    function buildSummaryText() {
+      const summary = calculateSummary();
+      const lines = [];
+
+      lines.push(`Rozliczenie${state.venue ? " — " + state.venue : ""}`);
+      lines.push("");
+
+      if (state.people.length) {
+        lines.push("Osoby: " + state.people.map(p => p.name).join(", "));
+        lines.push("");
+      }
+
+      if (state.items.length) {
+        lines.push("Pozycje:");
+        state.items.forEach((item, index) => {
+          let splitText = "";
+
+          if (item.splitMode === "custom") {
+            splitText = "kwotowo: " + ((item.allocations || [])
+              .map(a => `${getPersonName(a.personId)} ${money(a.cents)}`)
+              .join(", "));
+          } else {
+            splitText = "po równo między: " + (item.consumerIds || []).map(getPersonName).join(", ");
+          }
+
+          lines.push(
+            `${index + 1}. ${item.name} | ${item.qty} × ${money(item.priceCents)} = ${money(item.priceCents * item.qty)} | płacił(a): ${getPersonName(item.payerId)} | ${splitText}`
+          );
+        });
+        lines.push("");
+      }
+
+      lines.push(`Suma rachunku: ${money(summary.subtotalCents)}`);
+      lines.push("");
+
+      if (summary.rows.length) {
+        lines.push("Na osobę:");
+        summary.rows.forEach(row => {
+          let status = "rozliczone";
+          if (row.balanceCents > 0) status = `do odzyskania ${money(row.balanceCents)}`;
+          if (row.balanceCents < 0) status = `do dopłaty ${money(Math.abs(row.balanceCents))}`;
+
+          lines.push(
+            `- ${row.name}: zapłacił(a) ${money(row.paidCents)}, skonsumował(a) ${money(row.consumedCents)}, ${status}`
+          );
+        });
+        lines.push("");
+      }
+
+      if (summary.settlements.length) {
+        lines.push("Kto komu oddaje:");
+        summary.settlements.forEach(item => {
+          lines.push(`- ${item.from} -> ${item.to}: ${money(item.amountCents)}`);
+        });
+      } else {
+        lines.push("Wszyscy są rozliczeni.");
+      }
+
+      return lines.join("\n");
+    }
+
+    async function copySummary() {
+      const text = buildSummaryText();
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Skopiowano podsumowanie.");
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.style.position = "fixed";
+        area.style.left = "-9999px";
+        document.body.appendChild(area);
+        area.select();
+
+        try {
+          document.execCommand("copy");
+          showToast("Skopiowano podsumowanie.");
+        } catch {
+          window.prompt("Skopiuj ręcznie:", text);
+        } finally {
+          document.body.removeChild(area);
+        }
+      }
+    }
+
+    async function shareSummary() {
+      const text = buildSummaryText();
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: state.venue ? `Rozliczenie — ${state.venue}` : "Rozliczenie",
+            text
+          });
+        } catch {
+          /* anulowane */
+        }
+      } else {
+        copySummary();
+      }
+    }
+
+    els.venueInput.value = state.venue;
+
+    els.venueInput.addEventListener("input", () => {
+      state.venue = els.venueInput.value;
+      saveState();
+    });
+
+    els.addPersonBtn.addEventListener("click", addPerson);
+
+    els.personInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addPerson();
+      }
+    });
+
+    els.peopleList.addEventListener("click", e => {
+      const btn = e.target.closest("[data-remove-person]");
+      if (!btn) return;
+      removePerson(btn.dataset.removePerson);
+    });
+
+    els.allConsumersBtn.addEventListener("click", () => {
+      els.consumerList.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.checked = true;
+      });
+    });
+
+    els.clearConsumersBtn.addEventListener("click", () => {
+      els.consumerList.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.checked = false;
+      });
+    });
+
+    els.clearAllocationsBtn.addEventListener("click", () => {
+      els.allocationList.querySelectorAll("[data-allocation-person]").forEach(input => {
+        input.value = "";
+      });
+      updateCustomAllocationHelper();
+    });
+
+    document.querySelectorAll('input[name="splitMode"]').forEach(input => {
+      input.addEventListener("change", updateSplitModeBoxes);
+    });
+
+    els.itemPriceInput.addEventListener("input", updateCustomAllocationHelper);
+    els.itemQtyInput.addEventListener("input", updateCustomAllocationHelper);
+    els.allocationList.addEventListener("input", updateCustomAllocationHelper);
+
+    els.itemForm.addEventListener("submit", e => {
+      e.preventDefault();
+
+      if (!state.people.length) {
+        showToast("Najpierw dodaj osoby.");
+        return;
+      }
+
+      const name = els.itemNameInput.value.trim();
+      const priceCents = parsePriceToCents(els.itemPriceInput.value);
+      const qty = parseInt(els.itemQtyInput.value, 10);
+      const payerId = els.payerSelect.value;
+      const splitMode = getSelectedSplitMode();
+
+      if (!name) {
+        showToast("Podaj nazwę pozycji.");
+        return;
+      }
+
+      if (priceCents === null) {
+        showToast("Podaj poprawną cenę.");
+        return;
+      }
+
+      if (!Number.isInteger(qty) || qty < 1) {
+        showToast("Ilość musi być co najmniej 1.");
+        return;
+      }
+
+      if (!payerId) {
+        showToast("Wybierz osobę płacącą.");
+        return;
+      }
+
+      const totalCents = priceCents * qty;
+      let consumerIds = [];
+      let allocations = [];
+
+      if (splitMode === "custom") {
+        const custom = readCustomAllocations();
+
+        if (custom.hasInvalid) {
+          showToast("Jedna z wpisanych kwot jest niepoprawna.");
+          return;
+        }
+
+        if (!custom.allocations.length) {
+          showToast("Wpisz przynajmniej jedną kwotę.");
+          return;
+        }
+
+        if (custom.sumCents !== totalCents) {
+          if (custom.sumCents < totalCents) {
+            showToast(`Brakuje ${money(totalCents - custom.sumCents)} do pełnej kwoty.`);
+          } else {
+            showToast(`Wpisałeś za dużo o ${money(custom.sumCents - totalCents)}.`);
+          }
+          return;
+        }
+
+        allocations = custom.allocations;
+      } else {
+        consumerIds = getSelectedConsumers();
+
+        if (!consumerIds.length) {
+          showToast("Zaznacz przynajmniej jedną osobę.");
+          return;
+        }
+      }
+
+      const wasEditing = !!editingItemId;
+      const item = {
+        id: editingItemId || uid("item"),
+        name,
+        priceCents,
+        qty,
+        payerId,
+        splitMode,
+        consumerIds,
+        allocations
+      };
+
+      if (editingItemId) {
+        state.items = state.items.map(old => old.id === editingItemId ? item : old);
+      } else {
+        state.items.push(item);
+      }
+
+      resetItemForm();
+      render();
+      showToast(wasEditing ? "Zmieniono pozycję." : "Dodano pozycję.");
+    });
+
+    els.cancelEditBtn.addEventListener("click", () => {
+      resetItemForm();
+      render();
+      showToast("Anulowano edycję.");
+    });
+
+    els.itemsList.addEventListener("click", e => {
+      const editBtn = e.target.closest("[data-edit-item]");
+      const delBtn = e.target.closest("[data-delete-item]");
+
+      if (editBtn) {
+        startEditItem(editBtn.dataset.editItem);
+      }
+
+      if (delBtn) {
+        const ok = confirm("Usunąć tę pozycję?");
+        if (ok) deleteItem(delBtn.dataset.deleteItem);
+      }
+    });
+
+    els.copyBtn.addEventListener("click", copySummary);
+    els.shareBtn.addEventListener("click", shareSummary);
+
+    els.resetBtn.addEventListener("click", () => {
+      const ok = confirm("Na pewno rozpocząć nową sesję? Wszystkie dane zostaną usunięte.");
+      if (!ok) return;
+
+      state = defaultState();
+      editingItemId = null;
+      localStorage.removeItem(STORAGE_KEY);
+      els.venueInput.value = "";
+      resetItemForm();
+      render();
+      showToast("Rozpoczęto nową sesję.");
+    });
+
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredPrompt = event;
+      els.installBtn.classList.remove("hidden");
+    });
+
+    els.installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) {
+        showToast("Opcja instalacji pojawi się, gdy przeglądarka ją udostępni.");
+        return;
+      }
+
+      deferredPrompt.prompt();
+      const result = await deferredPrompt.userChoice;
+      if (result.outcome === "accepted") {
+        showToast("Aplikacja zainstalowana.");
+      }
+      deferredPrompt = null;
+      els.installBtn.classList.add("hidden");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      els.installBtn.classList.add("hidden");
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
